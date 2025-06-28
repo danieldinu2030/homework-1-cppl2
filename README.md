@@ -22,10 +22,10 @@ The input is guaranteed to be correct with respect to the project's conventions.
 ## Conventions
 
 - **Basic Register Mapping:**
-  - `A` → `eax`
-  - `B` → `ebx`
-  - `C` → `ecx`
-  - `D` → `edx`
+  - `a` → `eax`
+  - `b` → `ebx`
+  - `c` → `ecx`
+  - `d` → `edx`
 
 - **Data Types**
   - All of the data types are considered to be **4 bytes** (including pointers)
