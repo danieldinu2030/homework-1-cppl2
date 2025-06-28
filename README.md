@@ -165,6 +165,7 @@ The `for` and `while` are included in the program (no `do while`) in a very spec
 - The coding style of the input will always be consistent with the given examples (whitespaces)
 - Any relational operator is allowed (`==`, `!=`, `<`, `<=`, `>`, `>=`)
 - Loops should not be infinite
+- End loop label names will be placeholders
 
 | **C Code**                    | **ASM Code**          |
 |-------------                  |----------------       |
@@ -188,3 +189,7 @@ The `for` and `while` are included in the program (no `do while`) in a very spec
 
 ## Running the Program
 
+- For simplicity, the program expects one instruction at a time from stdin
+- The most recently written line will be transpiled and immediately printed to stdout
+- A Makefile is provided, with the `build`, `run` and `clean` rules
+- From the terminal, enter `make run` and start providing the right instructions with an Enter
