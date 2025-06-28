@@ -6,6 +6,7 @@
 - [Overview](#overview)
 - [Conventions](#conventions)
 - [Operations](#operations)
+- [Running the Program](#running-the-program)
 
 ## Overview
 
@@ -15,7 +16,8 @@ map to low-level operations.
 
 This transpiler is intentionally minimalistic and should be treated as such. Thus, features such as checking
 the input before performing any operations are not considered relevant enough for the goal of this project. The translation is 
-as simple as possible while covering basic arithmetic operations, register usage, data movement, and control flow constructs.
+as simple as possible while covering basic arithmetic operations, register usage, data movement, and control flow constructs. 
+The input is guaranteed to be correct with respect to the project's conventions.
 
 ## Conventions
 
@@ -42,7 +44,7 @@ The examples will be given as input versus output, for a better understanding of
 
 ### MOV
 
-The mov instructions is the simplest of all. As the name says, it moves the data from one place to another.
+The `mov` instruction is the simplest of all. As the name says, it moves the data from one place to another.
 
 ASM Syntax: `MOV destination, source`
 
@@ -62,7 +64,7 @@ ASM Syntax: `AND destination, source` | `OR destination, source` | `XOR destinat
 | **C Code**        | **ASM Code**    |
 |------------       |---------------- |
 | `a = a & 0xFF;`   | `AND eax, 0xFF` |
-| `b = b \| a`      | `OR ebx, eax`   |
+| `b = b \| a;`      | `OR ebx, eax`   |
 | `c = a ^ c;`      | `XOR ecx, eax`  |
 
 ### Shift Operations
@@ -119,4 +121,70 @@ ASM Syntax: `MUL source` | `DIV divisor`
 |                   | `DIV ecx`       |
 |                   | `MOV ebx, eax`  |
 
-### CMP
+### CMP and Jumps
+
+The `cmp` instruction compares two values by subtracting the second operand from the first. 
+It updates the CPU flags, but does not store the result. This is useful for conditional statements. 
+Using `cmp` and a few jump instructions esentially works like the `if` instruction from C.
+
+ASM Syntax: `CMP operand1, operand2`
+
+Example in ASM syntax:
+- `MOV eax, 3`
+- `CMP eax, 3` ; Compares eax with 3
+- `JE equal_label` ; Jumps to label "equal_label" if eax == 3 (Zero flag is set)
+
+Jumps use labels to control the flow of the program based on certain conditions. Only the most common ones are included 
+in this project. Here is a brief description of each included jump instruction:
+
+- **JMP** (Jump): Jumps to the given label.
+- **JE** (Jump if Equal): Jumps to the given label if the two compared values are equal (e.g.: `CMP` sets the Zero Flag).
+- **JNE** (Jump if Not Equal): Jumps if the two values are not equal (Zero Flag is not set).
+- **JG** (Jump if Greater): Jumps if the first value is greater than the second (Signed comparison).
+- **JGE** (Jump if Greater or Equal): Jumps if the first value is greater than or equal to the second.
+- **JL** (Jump if Less): Jumps if the first value is less than the second.
+- **JLE** (Jump if Less or Equal): Jumps if the first value is less than or equal to the second.
+
+ASM Syntax: `JMP label` | `JE label` | `JNE label` | `JG label` | `JL label`
+
+| **C Code**                  | **ASM Code**            |
+|-------------                |----------------         |
+| `if (a == b) {`             | `CMP eax, ebx`          |
+|                             | `JNE else_label`        |
+|     `// some code here`     | `; some code here`      |
+|                             | `JMP end_if`            |
+| `} else {`                  | `else_label:`           |
+|     `some other code here`  | `; some other code here`|
+| `}`                         | `end_if:`               |
+
+### Loops
+
+The `for` and `while` are included in the program (no `do while`) in a very specific form:
+- There will be no nested `for`, `if` or `while` instructions
+- None of the three components of the `for` instruction will be absent
+- The coding style of the input will always be consistent with the given examples (whitespaces)
+- Any relational operator is allowed (`==`, `!=`, `<`, `<=`, `>`, `>=`)
+- Loops should not be infinite
+
+| **C Code**                    | **ASM Code**          |
+|-------------                  |----------------       |
+| `for (a = 0; a < 10; a++) {`  | `MOV eax, 0`          |
+|                               | `start_loop:`         |
+|                               | `CMP eax, 10`         |
+|                               | `JGE end_loop`        |
+| `// some code here`           | `; some code here`    |
+|                               | `ADD eax, 1`          |
+|                               | `JMP start_loop`      |
+| `}`                           | `end_loop:`           |
+
+| **C Code**          | **ASM Code**                                          |
+|-------------        |----------------                                       |
+| `while (b < 5) {`   | `start_loop:`                                         |
+|                     | `CMP ebx, 5`                                          |
+|                     | `JGE end_loop`                                        |
+| `// some code here` | `; some code that makes b greater than or equal to 5` |
+|                     | `JMP start_loop`                                      |
+| `}`                 | `end_loop:`                                           |
+
+## Running the Program
+
